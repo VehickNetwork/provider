@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/test/index.ts",
-    "build": "tsc - p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "prepare": "npm run build"
   },
   "keywords": [],
