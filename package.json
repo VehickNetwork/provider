@@ -1,5 +1,5 @@
 {
-  "name": "@vehicknetwork/core",
+  "name": "@vehick-network/core",
   "version": "0.0.1",
   "description": "Core library of Vehick Network",
   "main": "out/index.js",
