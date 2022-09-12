@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+out
+tmp/
+temp/
+node_modules
+src/test
+constants.ts
