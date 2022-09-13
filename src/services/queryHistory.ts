@@ -46,6 +46,6 @@ export const queryHistory = async (
 
     return history;
   } catch (error) {
-    return [];
+    return undefined;
   }
 };
