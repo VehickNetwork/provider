@@ -1,19 +1,22 @@
 import { TransactionOnNetwork } from "@elrondnetwork/erdjs-network-providers/out";
 import { TransactionDecoder } from "@elrondnetwork/transaction-decoder";
 import axios from "axios";
-import { ITransactionHistory, IScInfo } from "../interfaces";
+import {
+  ITransactionHistory,
+  IScInfo,
+  IVehickNetworkConfig,
+} from "../interfaces";
 
 export const queryHistory = async (
-  scInfo: IScInfo,
+  vehickNetworkCOnfig: IVehickNetworkConfig,
   vehick_address: string,
-  proxy_url: string,
   skip_elements?: number
 ) => {
   let history: ITransactionHistory[] = [];
   try {
     const { data } = await axios.get(
-      `${proxy_url}/accounts/${
-        scInfo.address
+      `${vehickNetworkCOnfig.proxy_url}/accounts/${
+        vehickNetworkCOnfig.scInfo.address
       }/transactions?sender=${vehick_address}&status=success&from=${
         skip_elements != undefined ? skip_elements : 0
       }`, // skip_elements should implement pagination on the result page

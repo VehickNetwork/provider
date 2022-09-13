@@ -16,6 +16,6 @@
     "esModuleInterop": true,
     "declaration": true
   },
-  "include": ["src"],
+  "include": ["src", "networkconfig.ts"],
   "exclude": ["node_modules", "out", "src/test"]
 }

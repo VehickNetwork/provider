@@ -4,25 +4,30 @@ import {
   BytesValue,
   IAddress,
 } from "@elrondnetwork/erdjs/out";
-import { queryScAbi } from "./services/queryScAbi";
-import { IScInfo, ITransactionHistory, IVinData } from "./interfaces";
+import { queryScAbi } from "./providers/queryScAbi";
+import {
+  ITransactionHistory,
+  IVehickNetworkConfig,
+  IVinData,
+} from "./interfaces";
 import { setNftNoncePrefix } from "./helpers";
-import { queryHistory } from "./services/queryHistory";
-import { queryNftbyIdentifier } from "./services/queryNftbyIdentifier";
-import { queryVin } from "./services/queryVin";
+import { queryHistory } from "./providers/queryHistory";
+import { queryNftbyIdentifier } from "./providers/queryNftbyIdentifier";
+import { queryVin } from "./providers/queryVin";
 
 export class Vehick {
-  address!: IAddress;
-  owner!: IAddress;
-  nft_identifier!: string;
-  vin: string = "";
-  mileage: number = 0;
-  measure_unit: string = "";
-  current_dtc_codes: string[] = [];
-  history!: ITransactionHistory[] | undefined;
-  vinData!: IVinData | undefined;
+  private address!: IAddress;
+  private owner!: IAddress;
+  private nft_identifier!: string;
+  private vin: string = "";
+  private mileage: number = 0;
+  private measure_unit: string = "";
+  private current_dtc_codes: string[] = [];
+  private history!: ITransactionHistory[] | undefined;
+  private vinData!: IVinData | undefined;
+  private config!: IVehickNetworkConfig;
 
-  constructor(value?: Address | string) {
+  constructor(config: IVehickNetworkConfig, value?: Address | string) {
     if (!value) {
       return;
     }
@@ -32,16 +37,14 @@ export class Vehick {
     if (typeof value === "string") {
       this.nft_identifier = value;
     }
+    this.config = config;
   }
 
-  async networkSync(scInfo: IScInfo, proxy_url: string) {
+  async networkSync() {
     if (this.address) {
-      let queryResponse = await queryScAbi(
-        scInfo,
-        [new AddressValue(this.address)],
-        "getCarView",
-        proxy_url
-      );
+      let queryResponse = await queryScAbi(this.config, "getCarView", [
+        new AddressValue(this.address),
+      ]);
 
       let addressSyncronized = queryResponse?.firstValue?.valueOf();
 
@@ -66,35 +69,35 @@ export class Vehick {
     } else {
       let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
-        proxy_url
+        this.config.proxy_url
       );
       this.owner = nftSyncronized.owner;
       this.address = new Address(
         Buffer.from(nftSyncronized.attributes, "base64")
       );
-      await this.networkSync(scInfo, proxy_url);
+      await this.networkSync();
     }
 
     if (!this.owner) {
       let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
-        proxy_url
+        this.config.proxy_url
       );
       this.owner = nftSyncronized.owner;
     }
   }
 
-  async nextPage(scInfo: IScInfo, proxy_url: string, skip_elements: number) {
+  async nextPage(skip_elements: number) {
     this.history = await queryHistory(
-      scInfo,
+      this.config,
       this.address.bech32(),
-      proxy_url,
+
       skip_elements
     );
   }
 
-  async historySync(scInfo: IScInfo, proxy_url: string) {
-    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url);
+  async historySync() {
+    this.history = await queryHistory(this.config, this.address.bech32());
   }
 
   async vinSync() {
