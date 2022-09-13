@@ -82,8 +82,6 @@ export class Vehick {
       );
       this.owner = nftSyncronized.owner;
     }
-
-    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url); // first page of history (25 elements maximum)
   }
 
   async nextPage(scInfo: IScInfo, proxy_url: string, skip_elements: number) {
@@ -93,6 +91,10 @@ export class Vehick {
       proxy_url,
       skip_elements
     );
+  }
+
+  async historySync(scInfo: IScInfo, proxy_url: string) {
+    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url);
   }
 
   async vinSync() {
