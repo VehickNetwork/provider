@@ -1,6 +1,5 @@
 import { ProxyNetworkProvider } from "@elrondnetwork/erdjs-network-providers/out";
 import {
-  Address,
   SmartContract,
   SmartContractAbi,
   ContractFunction,
@@ -17,7 +16,7 @@ export const queryScAbi = async (
   proxy_url: string
 ) => {
   try {
-    if (scInfo?.abiUrl) {
+    if (scInfo?.abiUrl || scInfo?.abiName) {
       let abiResponse: AxiosResponse = await axios.get(scInfo.abiUrl!);
       let abiRegistry = AbiRegistry.create(await abiResponse.data);
       let abi = new SmartContractAbi(abiRegistry, [scInfo.abiName!]);
