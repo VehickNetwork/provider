@@ -25,3 +25,8 @@ export interface IVinData {
   year: string;
   fuelType: string;
 }
+
+export interface IVehickNetworkConfig {
+  scInfo: IScInfo;
+  proxy_url: string;
+}

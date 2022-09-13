@@ -6,24 +6,33 @@ import {
   ResultsParser,
   AbiRegistry,
 } from "@elrondnetwork/erdjs";
-import { IScInfo } from "../interfaces";
+import { IScInfo, IVehickNetworkConfig } from "../interfaces";
 import axios, { AxiosResponse } from "axios";
+import { VehickNetworkConfig } from "./networkconfig";
 
 export const queryScAbi = async (
-  scInfo: IScInfo,
+  vehickNetworkConfig: IVehickNetworkConfig,
   args: any[],
-  endpoint: string,
-  proxy_url: string
+  endpoint: string
 ) => {
   try {
-    if (scInfo?.abiUrl || scInfo?.abiName) {
-      let abiResponse: AxiosResponse = await axios.get(scInfo.abiUrl!);
+    if (
+      vehickNetworkConfig.scInfo?.abiUrl ||
+      vehickNetworkConfig.scInfo?.abiName
+    ) {
+      let abiResponse: AxiosResponse = await axios.get(
+        vehickNetworkConfig.scInfo.abiUrl!
+      );
       let abiRegistry = AbiRegistry.create(await abiResponse.data);
-      let abi = new SmartContractAbi(abiRegistry, [scInfo.abiName!]);
+      let abi = new SmartContractAbi(abiRegistry, [
+        vehickNetworkConfig.scInfo.abiName!,
+      ]);
 
-      let networkProvider = new ProxyNetworkProvider(proxy_url);
+      let networkProvider = new ProxyNetworkProvider(
+        vehickNetworkConfig.proxy_url
+      );
       let contract = new SmartContract({
-        address: scInfo.address,
+        address: vehickNetworkConfig.scInfo.address,
         abi: abi,
       });
 

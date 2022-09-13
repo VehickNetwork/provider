@@ -5,7 +5,12 @@ import {
   IAddress,
 } from "@elrondnetwork/erdjs/out";
 import { queryScAbi } from "./services/queryScAbi";
-import { IScInfo, ITransactionHistory, IVinData } from "./interfaces";
+import {
+  IScInfo,
+  ITransactionHistory,
+  IVehickNetworkConfig,
+  IVinData,
+} from "./interfaces";
 import { setNftNoncePrefix } from "./helpers";
 import { queryHistory } from "./services/queryHistory";
 import { queryNftbyIdentifier } from "./services/queryNftbyIdentifier";
@@ -34,13 +39,12 @@ export class Vehick {
     }
   }
 
-  async networkSync(scInfo: IScInfo, proxy_url: string) {
+  async networkSync(vehickNetworkConfig: IVehickNetworkConfig) {
     if (this.address) {
       let queryResponse = await queryScAbi(
-        scInfo,
+        vehickNetworkConfig,
         [new AddressValue(this.address)],
-        "getCarView",
-        proxy_url
+        "getCarView"
       );
 
       let addressSyncronized = queryResponse?.firstValue?.valueOf();
@@ -66,35 +70,41 @@ export class Vehick {
     } else {
       let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
-        proxy_url
+        vehickNetworkConfig.proxy_url
       );
       this.owner = nftSyncronized.owner;
       this.address = new Address(
         Buffer.from(nftSyncronized.attributes, "base64")
       );
-      await this.networkSync(scInfo, proxy_url);
+      await this.networkSync(vehickNetworkConfig);
     }
 
     if (!this.owner) {
       let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
-        proxy_url
+        vehickNetworkConfig.proxy_url
       );
       this.owner = nftSyncronized.owner;
     }
   }
 
-  async nextPage(scInfo: IScInfo, proxy_url: string, skip_elements: number) {
+  async nextPage(
+    vehickNetworkConfig: IVehickNetworkConfig,
+    skip_elements: number
+  ) {
     this.history = await queryHistory(
-      scInfo,
+      vehickNetworkConfig,
       this.address.bech32(),
-      proxy_url,
+
       skip_elements
     );
   }
 
-  async historySync(scInfo: IScInfo, proxy_url: string) {
-    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url);
+  async historySync(vehickNetworkConfig: IVehickNetworkConfig) {
+    this.history = await queryHistory(
+      vehickNetworkConfig,
+      this.address.bech32()
+    );
   }
 
   async vinSync() {
