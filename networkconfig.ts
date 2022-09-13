@@ -1,4 +1,4 @@
-import { IScInfo, IVehickNetworkConfig } from "../interfaces";
+import { IScInfo, IVehickNetworkConfig } from "./src/interfaces";
 
 export class VehickNetworkConfig implements IVehickNetworkConfig {
   scInfo: IScInfo;

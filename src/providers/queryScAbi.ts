@@ -6,14 +6,13 @@ import {
   ResultsParser,
   AbiRegistry,
 } from "@elrondnetwork/erdjs";
-import { IScInfo, IVehickNetworkConfig } from "../interfaces";
+import { IVehickNetworkConfig } from "../interfaces";
 import axios, { AxiosResponse } from "axios";
-import { VehickNetworkConfig } from "./networkconfig";
 
 export const queryScAbi = async (
   vehickNetworkConfig: IVehickNetworkConfig,
-  args: any[],
-  endpoint: string
+  endpoint: string,
+  args: any[]
 ) => {
   try {
     if (
