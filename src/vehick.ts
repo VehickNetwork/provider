@@ -5,10 +5,11 @@ import {
   IAddress,
 } from "@elrondnetwork/erdjs/out";
 import { queryScAbi } from "./services/queryScAbi";
-import { IScInfo, ITransactionHistory } from "./interfaces";
+import { IScInfo, ITransactionHistory, IVinData } from "./interfaces";
 import { setNftNoncePrefix } from "./helpers";
 import { queryHistory } from "./services/queryHistory";
 import { queryNftbyIdentifier } from "./services/queryNftbyIdentifier";
+import { queryVin } from "./services/queryVin";
 
 export class Vehick {
   address!: IAddress;
@@ -18,7 +19,8 @@ export class Vehick {
   mileage: number = 0;
   measure_unit: string = "";
   current_dtc_codes: string[] = [];
-  history: ITransactionHistory[] = [];
+  history!: ITransactionHistory[] | undefined;
+  vinData!: IVinData | undefined;
 
   constructor(value?: Address | string) {
     if (!value) {
@@ -80,8 +82,6 @@ export class Vehick {
       );
       this.owner = nftSyncronized.owner;
     }
-
-    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url); // first page of history (25 elements maximum)
   }
 
   async nextPage(scInfo: IScInfo, proxy_url: string, skip_elements: number) {
@@ -91,6 +91,30 @@ export class Vehick {
       proxy_url,
       skip_elements
     );
+  }
+
+  async historySync(scInfo: IScInfo, proxy_url: string) {
+    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url);
+  }
+
+  async vinSync() {
+    let vinQuery = await queryVin(this.vin);
+    if (!vinQuery) {
+      return;
+    }
+    let vinData: IVinData = {
+      make: vinQuery.Make,
+      model: vinQuery.Model,
+      manufacturer: vinQuery.Manufacturer,
+      bodyType: vinQuery.BodyClass,
+      doors: vinQuery.Doors,
+      driveTrain: vinQuery.DriveType,
+      engineDisplacement: vinQuery.DisplacementCC,
+      engineHP: vinQuery.EngineHP,
+      year: vinQuery.ModelYear,
+      fuelType: vinQuery.FuelTypePrimary,
+    };
+    this.vinData = vinData;
   }
 
   static buildIdentifier(token_identifier: string, nonce: number) {
@@ -106,6 +130,7 @@ export class Vehick {
       current_mileage: this.mileage,
       measure_unit: this.measure_unit,
       current_dtc_codes: this.current_dtc_codes,
+      vinData: this.vinData,
       history: this.history,
     };
   }

@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@elrondnetwork/erdjs": "^11.0.0",
-    "@elrondnetwork/erdjs-network-providers": "^1.1.0"
+    "@elrondnetwork/erdjs-network-providers": "^1.1.0",
+    "nhtsa": "^1.2.7"
   }
 }
