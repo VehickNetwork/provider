@@ -8,7 +8,7 @@ import { queryScAbi } from "./services/queryScAbi";
 import { IScInfo, ITransactionHistory } from "./interfaces";
 import { setNftNoncePrefix } from "./helpers";
 import { queryHistory } from "./services/queryHistory";
-import { queryNftDetails } from "./services/queryNftDetails";
+import { queryNftbyIdentifier } from "./services/queryNftbyIdentifier";
 
 export class Vehick {
   address!: IAddress;
@@ -62,7 +62,7 @@ export class Vehick {
         }
       );
     } else {
-      let nftSyncronized = await queryNftDetails(
+      let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
         proxy_url
       );
@@ -74,14 +74,23 @@ export class Vehick {
     }
 
     if (!this.owner) {
-      let nftSyncronized = await queryNftDetails(
+      let nftSyncronized = await queryNftbyIdentifier(
         this.nft_identifier,
         proxy_url
       );
       this.owner = nftSyncronized.owner;
     }
 
-    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url);
+    this.history = await queryHistory(scInfo, this.address.bech32(), proxy_url); // first page of history (25 elements maximum)
+  }
+
+  async nextPage(scInfo: IScInfo, proxy_url: string, skip_elements: number) {
+    this.history = await queryHistory(
+      scInfo,
+      this.address.bech32(),
+      proxy_url,
+      skip_elements
+    );
   }
 
   static buildIdentifier(token_identifier: string, nonce: number) {
