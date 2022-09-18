@@ -24,11 +24,11 @@ export class VehickHistoryOnNetwork {
 
     let result = new VehickHistoryOnNetwork();
 
-    (result.txHash = payload["hash"] || ""),
-      (result.timestamp = payload["timestamp"] || 0),
-      (result.functionName = metadata["functionName"] || ""),
-      (result.functionArgs = metadata["functionArgs"] || []),
-      console.log(result);
+    result.txHash = payload["hash"] || "";
+    result.timestamp = payload["timestamp"] || 0;
+    result.functionName = metadata["functionName"] || "";
+    result.functionArgs = metadata["functionArgs"] || [];
+
     return result;
   }
 }
