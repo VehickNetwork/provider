@@ -4,6 +4,7 @@ export interface IScInfo {
   address: Address;
   abiUrl?: string;
   abiName?: string;
+  endpoint?: string;
 }
 
 export interface IVinData {
