@@ -1,7 +1,7 @@
 {
-  "name": "@vehick-network/core",
+  "name": "@vehick-network/provider-core",
   "version": "0.0.1",
-  "description": "Core library of Vehick Network",
+  "description": "Provider core library of Vehick Network",
   "main": "out/index.js",
   "types": "out/index.d.js",
   "files": [
