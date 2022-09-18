@@ -1,12 +1,5 @@
 import { Address } from "@elrondnetwork/erdjs/out";
 
-export interface ITransactionHistory {
-  txHash: string;
-  functionName: string;
-  functionArgs: string[];
-  timestamp: number;
-}
-
 export interface IScInfo {
   address: Address;
   abiUrl?: string;
@@ -24,9 +17,4 @@ export interface IVinData {
   engineHP: string;
   year: string;
   fuelType: string;
-}
-
-export interface IVehickNetworkConfig {
-  scInfo: IScInfo;
-  proxy_url: string;
 }
