@@ -6,7 +6,7 @@ import {
   ResultsParser,
   AbiRegistry,
 } from "@elrondnetwork/erdjs";
-import { IVehickNetworkConfig } from "../interfaces";
+import { IVehickNetworkConfig } from "./interfaces";
 import axios, { AxiosResponse } from "axios";
 
 export const queryScAbi = async (
