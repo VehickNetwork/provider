@@ -1,13 +1,11 @@
 import {
   ApiNetworkProvider,
-  NonFungibleTokenOfAccountOnNetwork,
   TransactionOnNetwork,
 } from "@elrondnetwork/erdjs-network-providers/out";
 import {
   AbiRegistry,
   Address,
   AddressValue,
-  BytesValue,
   ContractFunction,
   IAddress,
   ResultsParser,
@@ -20,8 +18,10 @@ import { VehickHistoryOnNetwork } from "./history";
 import { IPagination } from "@elrondnetwork/erdjs-network-providers/out/interface";
 import axios, { AxiosResponse } from "axios";
 import { VinData } from "./vindata";
-import { VehickOnNetwork } from "./vehick";
+import { VehickOnNetwork } from "./vehickOnNetwork";
 import { NonFungibleTokenOnNetwork } from "./tokens";
+import { Nonce } from "@elrondnetwork/erdjs-network-providers/out/primitives";
+
 const nhtsa = require("nhtsa");
 
 export class VehickCustomProvider extends ApiNetworkProvider {
@@ -97,29 +97,26 @@ export class VehickCustomProvider extends ApiNetworkProvider {
     }
   }
 
-  async getVinData(vinToDecode: string): Promise<VinData | undefined> {
-    if (vinToDecode.length == 17) {
-      const { data } = await nhtsa.decodeVinFlatFormat(vinToDecode);
-      let response = data.Results[0];
-      let vinData = new VinData();
+  async getVinData(vinToDecode: string): Promise<VinData> {
+    const { data } = await nhtsa.decodeVinFlatFormat(vinToDecode);
+    let response = data.Results[0];
+    let vinData = new VinData();
 
-      vinData.make = response.Make;
-      vinData.model = response.Model;
-      vinData.manufacturer = response.Manufacturer;
-      vinData.bodyType = response.BodyClass;
-      vinData.doors = response.Doors;
-      vinData.driveTrain = response.DriveType;
-      vinData.engineDisplacement = response.DisplacementCC;
-      vinData.engineHP = response.EngineHP;
-      vinData.year = response.ModelYear;
-      vinData.fuelType = response.FuelTypePrimary;
+    vinData.make = response.Make;
+    vinData.model = response.Model;
+    vinData.manufacturer = response.Manufacturer;
+    vinData.bodyType = response.BodyClass;
+    vinData.doors = response.Doors;
+    vinData.driveTrain = response.DriveType;
+    vinData.engineDisplacement = response.DisplacementCC;
+    vinData.engineHP = response.EngineHP;
+    vinData.year = response.ModelYear;
+    vinData.fuelType = response.FuelTypePrimary;
 
-      return vinData;
-    }
-    return;
+    return vinData;
   }
 
-  async networkSync(address: IAddress): Promise<VehickOnNetwork> {
+  async getVehick(address: IAddress): Promise<VehickOnNetwork> {
     let queryResponse = await this.queryContractByAbi([
       new AddressValue(new Address(address.bech32())),
     ]);
@@ -127,10 +124,14 @@ export class VehickCustomProvider extends ApiNetworkProvider {
     let vehickOnNetwork = VehickOnNetwork.fromContractQuery(queryResponse);
 
     let nftSyncronized = await this.getNonFungibleTokenByIdentifier(
-      vehickOnNetwork.identifier
+      `${vehickOnNetwork.ticker}-${new Nonce(
+        vehickOnNetwork.tickerNonce
+      ).hex()}`
     );
+
     vehickOnNetwork.address = address;
     vehickOnNetwork.owner = nftSyncronized.owner;
+    vehickOnNetwork.identifier = nftSyncronized.identifier;
 
     return vehickOnNetwork;
   }

@@ -7,7 +7,3 @@ export const trimHash = (hash: string, keep = 10) => {
 export const isAddressValid = (address: string): boolean => {
   return Buffer.from(address, "hex").length == 32;
 };
-
-export const setNftNoncePrefix = (number: number): string => {
-  return ("0" + number).slice(-2);
-};
