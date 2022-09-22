@@ -1,4 +1,7 @@
-import { TransactionOnNetwork } from "@elrondnetwork/erdjs-network-providers/out";
+import {
+  ContractResults,
+  TransactionOnNetwork,
+} from "@elrondnetwork/erdjs-network-providers/out";
 import { TransactionDecoder } from "@elrondnetwork/transaction-decoder";
 
 export class VehickHistoryOnNetwork {
@@ -6,7 +9,7 @@ export class VehickHistoryOnNetwork {
   timestamp: number = 0;
   functionName: string = "";
   functionArgs: string[] = [""];
-
+  //contractResults: ContractResults = new ContractResults([]);
   constructor(init?: Partial<VehickHistoryOnNetwork>) {
     Object.assign(this, init);
   }
@@ -28,6 +31,7 @@ export class VehickHistoryOnNetwork {
     result.timestamp = payload["timestamp"] || 0;
     result.functionName = metadata["functionName"] || "";
     result.functionArgs = metadata["functionArgs"] || [];
+    // result.contractResults = payload.contractResults || [];
 
     return result;
   }

@@ -37,14 +37,21 @@ export class VehickCustomProvider extends ApiNetworkProvider {
     _pagination?: IPagination //should implement pagination
   ): Promise<VehickHistoryOnNetwork[]> {
     let response: any[] = await this.doGetGeneric(
-      `accounts/${this.scInfo?.address}/transactions?sender=${vehickAddress}&status=success`
+      `accounts/${vehickAddress}/transactions`
     );
 
-    let history = response.map((item) =>
-      VehickHistoryOnNetwork.fromApiHttpResponse(
-        TransactionOnNetwork.fromApiHttpResponse(item.txHash, item)
-      )
-    );
+    let abiResponse: AxiosResponse = await axios.get(this.scInfo?.abiUrl!);
+    let abiRegistry = AbiRegistry.create(await abiResponse.data);
+    let abi = new SmartContractAbi(abiRegistry, [this.scInfo?.abiName!]);
+    let endpoints = abi.getAllEndpoints().map((item) => item.name);
+
+    let history = response
+      .filter((filter) => endpoints.includes(filter.function))
+      .map((item) =>
+        VehickHistoryOnNetwork.fromApiHttpResponse(
+          TransactionOnNetwork.fromApiHttpResponse(item.txHash, item)
+        )
+      );
 
     return history;
   }
