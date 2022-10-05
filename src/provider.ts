@@ -15,7 +15,10 @@ import {
 } from "@elrondnetwork/erdjs/out";
 import { IScInfo } from "./interfaces";
 import { VehickHistoryOnNetwork } from "./history";
-import { IPagination } from "@elrondnetwork/erdjs-network-providers/out/interface";
+import {
+  IPagination,
+  ITransaction,
+} from "@elrondnetwork/erdjs-network-providers/out/interface";
 import axios, { AxiosResponse } from "axios";
 import { VinData } from "./vindata";
 import { VehickOnNetwork } from "./vehickOnNetwork";
@@ -37,7 +40,7 @@ export class VehickCustomProvider extends ApiNetworkProvider {
     _pagination?: IPagination //should implement pagination
   ): Promise<VehickHistoryOnNetwork[]> {
     let response: any[] = await this.doGetGeneric(
-      `accounts/${vehickAddress}/transactions`
+      `accounts/${vehickAddress}/transactions?&status=success`
     );
 
     let abiResponse: AxiosResponse = await axios.get(this.scInfo?.abiUrl!);
@@ -141,5 +144,31 @@ export class VehickCustomProvider extends ApiNetworkProvider {
     vehickOnNetwork.identifier = nftSyncronized.identifier;
 
     return vehickOnNetwork;
+  }
+
+  async sendRelayedTransaction(transactions: ITransaction) {
+    let respose = await this.doPostRelayed(
+      "http://localhost:3000/post",
+      transactions.toSendable()
+    );
+    return respose;
+  }
+
+  async doPostRelayed(resourceUrl: string, payload: any) {
+    let response = await this.doRelayed(resourceUrl, payload);
+    return response;
+  }
+
+  async doRelayed(resourceUrl: string, payload: any) {
+    try {
+      let response = await axios.post(resourceUrl, JSON.stringify(payload), {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      let responsePayload = response.data;
+      return responsePayload;
+    } catch (error) {}
   }
 }

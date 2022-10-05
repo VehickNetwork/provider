@@ -23,7 +23,7 @@ jobs:
           RELEASE_TAG=v$(node -p "require('./package.json').version")
           gh release create $RELEASE_TAG --title="$RELEASE_TAG"
 
-      - run: npm install
+      - run: npm ci
 
       - name: Publish to npmjs
         env:
